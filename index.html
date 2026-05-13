@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#8B0000" />
+    <meta name="description" content="Genecode — premium men's shirts. Drop 01." />
+    <title>GENECODE</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#collection">Skip to collection</a>
+
+    <header class="site-header" id="site-header">
+      <div class="site-header__inner">
+        <a class="site-header__brand" href="#" aria-label="Genecode home">
+          <img class="site-header__logo" src="assets/logo.png" width="120" height="32" alt="" />
+        </a>
+        <span class="site-header__wordmark" aria-hidden="true">GENECODE</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="hero" aria-label="Introduction">
+        <div class="hero__inner">
+          <h1 class="hero__title">GENECODE</h1>
+          <hr class="hero__rule" />
+          <p class="hero__tagline" id="hero-tagline"></p>
+        </div>
+        <div class="hero__scroll" aria-hidden="true">
+          <span class="hero__scroll-arrow"></span>
+        </div>
+      </section>
+
+      <section class="collection" id="collection" aria-labelledby="collection-heading">
+        <div class="collection__inner">
+          <h2 class="collection__heading" id="collection-heading">Drop</h2>
+          <div class="collection__grid" id="shirt-grid" role="list"></div>
+        </div>
+      </section>
+
+      <section class="about" id="about" aria-labelledby="about-heading">
+        <div class="about__inner">
+          <h2 class="about__heading" id="about-heading">The code</h2>
+          <p class="about__text" id="about-text"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer" id="site-footer">
+      <div class="site-footer__inner">
+        <img class="site-footer__logo" src="assets/logo-dark.png" width="160" height="40" alt="" />
+        <p class="site-footer__wordmark">GENECODE</p>
+        <p class="site-footer__social">
+          <a class="site-footer__link" id="footer-instagram" href="#" rel="noopener noreferrer" target="_blank"></a>
+        </p>
+        <p class="site-footer__legal" id="footer-legal"></p>
+      </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="js/main.js" defer></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {});
+        });
+      }
+    </script>
+  </body>
+</html>

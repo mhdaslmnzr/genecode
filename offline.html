@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#8B0000" />
+    <title>GENECODE — Offline</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        min-height: 100dvh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(1rem, 5vw, 2rem);
+        padding-top: calc(clamp(1rem, 5vw, 2rem) + env(safe-area-inset-top, 0px));
+        padding-bottom: calc(clamp(1rem, 5vw, 2rem) + env(safe-area-inset-bottom, 0px));
+        background: #8b0000;
+        color: #f5f0d0;
+        text-align: center;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      .mark {
+        width: min(200px, 55vw);
+        height: auto;
+        margin-bottom: clamp(1rem, 4vw, 1.5rem);
+      }
+      h1 {
+        margin: 0 0 clamp(0.75rem, 3vw, 1rem);
+        font-family: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif;
+        font-size: clamp(2.5rem, 10vw + 1rem, 4rem);
+        letter-spacing: 0.08em;
+        line-height: 1;
+      }
+      p {
+        margin: 0;
+        max-width: 22rem;
+        font-weight: 300;
+        font-size: clamp(0.9rem, 2.2vw + 0.75rem, 1rem);
+        line-height: 1.6;
+        color: rgba(245, 240, 208, 0.88);
+      }
+    </style>
+  </head>
+  <body>
+    <img class="mark" src="assets/logo-dark.png" width="200" height="50" alt="" />
+    <h1>NO SIGNAL</h1>
+    <p>Connect to the internet to see the latest drop.</p>
+  </body>
+</html>

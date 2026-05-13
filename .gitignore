@@ -1,0 +1,14 @@
+# Project plan (local only — not versioned)
+genecode_cursor_doc.docx
+
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+
+# Logs / env (if added later)
+*.log
+.env
+.env.*

@@ -1,14 +1,18 @@
 /* global self, caches */
-var CACHE_NAME = "genecode-v1";
+var CACHE_NAME = "genecode-v2";
 
 var PRECACHE_URLS = [
   "./",
   "./index.html",
+  "./archive.html",
   "./offline.html",
   "./manifest.json",
   "./config.js",
   "./css/style.css",
+  "./js/catalog.js",
+  "./js/detail-modal.js",
   "./js/main.js",
+  "./js/archive.js",
   "./assets/logo.png",
   "./assets/logo-dark.png",
   "./assets/icons/icon-192.png",

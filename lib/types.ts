@@ -1,0 +1,65 @@
+export type DropStatus = "active" | "sold_out";
+
+export interface Shirt {
+  id?: string;
+  code: string;
+  name: string | null;
+  tagline: string | null;
+  price: string | null;
+  image: string;
+  sizes: string[];
+  soldOut: boolean;
+}
+
+export interface Drop {
+  id: string;
+  year: number;
+  number: string;
+  label: string;
+  name: string | null;
+  tagline: string;
+  status: DropStatus;
+  shirts: Shirt[];
+}
+
+export interface FlatShirt {
+  drop: Drop;
+  shirt: Shirt;
+  code: string;
+  key: string;
+  buyable: boolean;
+  soldOut: boolean;
+}
+
+export interface SiteSettings {
+  activeDropId: string;
+  whatsappNumber: string;
+  instagramHandle: string;
+  aboutText: string;
+  ticker: { enabled: boolean; messages: string[] };
+}
+
+export interface CartItem {
+  key: string;
+  year: number;
+  dropNum: string;
+  code: string;
+  name: string;
+  price: string;
+  image: string;
+  size: string;
+  quantity: number;
+  dropId: string;
+  shirtId?: string;
+}
+
+export interface OrderRecord {
+  id: string;
+  customer_name: string;
+  phone: string;
+  email: string | null;
+  address: string;
+  status: string;
+  total: number;
+  created_at: string;
+}

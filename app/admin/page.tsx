@@ -15,8 +15,10 @@ export default async function AdminDashboard() {
             <h1 className="collection__heading">Admin</h1>
             <p className="about__text">Signed in as {email}</p>
             <ul className="admin-nav-list">
-              <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/drops">Manage drops</Link></li>
-              <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/content">Manage homepage images</Link></li>
+              <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/drops">Manage catalog</Link></li>
+              <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/archive">Archive</Link></li>
+              <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/ticker">Edit ticker</Link></li>
+              <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/content">Testimonials</Link></li>
             </ul>
             <AdminLogoutButton />
           </div>

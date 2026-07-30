@@ -6,6 +6,7 @@ export interface Shirt {
   name: string | null;
   tagline: string | null;
   price: string | null;
+  discountedPrice: string | null;
   image: string;
   sizes: string[];
   soldOut: boolean;

@@ -10,7 +10,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). If Supabase is not configured, the storefront uses the catalog in `lib/site-config.ts`.
+Open [http://localhost:3000](http://localhost:3000). The storefront catalog and product images are loaded exclusively from Supabase.
 
 ## Configuration
 
@@ -30,7 +30,6 @@ Run these files in order:
 1. `supabase/migrations/001_initial_schema.sql`
 2. `supabase/migrations/002_site_settings.sql`
 3. `supabase/migrations/003_homepage_images.sql`
-4. `supabase/seed.sql`
 
 Public users receive read-only catalog access through Row Level Security. The service-role key must remain server-side.
 
@@ -49,7 +48,6 @@ The `/admin/content` screen accepts any number of customer-feedback screenshots 
 | `/shirt/[year]/[dropNum]/[code]` | Product, size selection, and WhatsApp purchase link |
 | `/admin` | Catalog administration |
 
-The original static site is retained in `legacy/` for reference.
 
 ## Keeping Supabase active on Vercel
 

@@ -267,6 +267,69 @@ a {
   word-break: break-word;
 }
 
+.app-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: var(--page-pad-x);
+  background: var(--color-crimson);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 450ms ease, visibility 450ms ease;
+}
+
+.app-splash--leaving {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.app-splash__content {
+  width: min(72vw, 24rem);
+  display: grid;
+  justify-items: center;
+  gap: var(--space-xl);
+}
+
+.app-splash__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.app-splash__bar {
+  width: min(70%, 15rem);
+  height: 2px;
+  overflow: hidden;
+  background: rgba(245, 240, 208, 0.22);
+}
+
+.app-splash__bar span {
+  display: block;
+  width: 45%;
+  height: 100%;
+  background: var(--color-cream);
+  animation: app-splash-progress 1s ease-in-out infinite;
+}
+
+@keyframes app-splash-progress {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(245%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-splash {
+    transition-duration: 120ms;
+  }
+
+  .app-splash__bar span {
+    width: 100%;
+    animation: none;
+  }
+}
+
 .hero__logo {
   display: block;
   width: min(76vw, 36rem);
@@ -458,9 +521,23 @@ a {
 
 .shirt-card__price {
   margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
   font-weight: 500;
   font-size: clamp(0.9375rem, 1vw + 0.8rem, 1rem);
   color: var(--color-charcoal);
+}
+
+.price--original {
+  color: var(--color-gray);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.price--discounted {
+  color: var(--color-crimson);
+  font-weight: 700;
 }
 
 .shirt-card__sizes {
@@ -543,26 +620,6 @@ a {
 
 .shirt-card--sold-out .shirt-card__cta {
   display: none;
-}
-
-.carry-over {
-  padding-block: var(--space-section-y);
-  padding-inline: var(--page-pad-x);
-  border-top: 1px solid var(--color-light-gray);
-  background: var(--color-warm-white);
-}
-
-.carry-over__inner {
-  width: var(--page-max);
-  margin-inline: auto;
-}
-
-.carry-over__heading {
-  margin: 0 0 var(--space-xl);
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 4vw + 0.35rem, 1.875rem);
-  letter-spacing: 0.08em;
-  color: var(--color-charcoal);
 }
 
 .about {
@@ -1085,6 +1142,9 @@ body.shirt-detail-open {
 
 .shirt-detail__price {
   margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
   font-weight: 500;
   font-size: 1.0625rem;
   color: var(--color-charcoal);
@@ -1535,6 +1595,47 @@ body.shirt-detail-open {
   min-width: 0;
 }
 
+.admin-price-form {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.admin-price-form label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.admin-price-input {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch-min);
+  border: 1px solid var(--admin-border-strong);
+  background: var(--admin-input-bg);
+}
+
+.admin-price-input b {
+  padding-left: 0.65rem;
+}
+
+.admin-panel .admin-price-input input {
+  width: 8rem;
+  margin: 0;
+  padding: 0.55rem 0.65rem 0.55rem 0.25rem;
+  border: 0;
+  outline: 0;
+}
+
+.admin-price-form .admin-btn {
+  margin-top: 0;
+}
+
 .admin-row__code {
   font-family: var(--font-display);
   letter-spacing: 0.06em;
@@ -1605,6 +1706,256 @@ body.shirt-detail-open {
   margin-top: var(--space-xl);
 }
 
+.admin-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+.admin-size-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.admin-size-btn {
+  min-width: 4.25rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--admin-border-strong);
+  border-radius: var(--radius);
+  background: var(--admin-input-bg);
+  color: var(--color-charcoal);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-size-btn span {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.admin-size-btn--available {
+  border-color: #1a5c2e;
+  background: #e8f5eb;
+  color: #1a5c2e;
+}
+
+.admin-size-btn--sold {
+  border-color: var(--color-crimson);
+  background: #fdeaea;
+  color: #7a1f1f;
+}
+
+.admin-section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.admin-section-heading .archive-drop__title {
+  margin: 0;
+}
+
+.admin-catalog-form {
+  margin-top: var(--space-xl);
+}
+
+.admin-catalog-form h2,
+.admin-catalog-form h3 {
+  margin: 0;
+}
+
+.admin-live-preview {
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-lg);
+  border: 1px solid var(--admin-border-strong);
+  background: var(--color-light-gray);
+}
+
+.admin-live-preview__label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-crimson);
+}
+
+.admin-live-preview h3,
+.admin-live-preview p {
+  margin: 0;
+}
+
+.admin-live-preview p {
+  color: var(--color-gray);
+}
+
+.admin-live-preview__prices {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.admin-live-preview--shirt {
+  width: min(100%, 20rem);
+  background: var(--color-warm-white);
+}
+
+.admin-live-preview__media {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--color-charcoal);
+  color: var(--color-cream);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-live-preview__media img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  border: 0;
+}
+
+.admin-add-trigger {
+  width: fit-content;
+  margin-top: 0;
+}
+
+.admin-primary-action {
+  margin-top: var(--space-2xl);
+  margin-bottom: var(--space-2xl);
+}
+
+.admin-drop-index {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.admin-drop-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  border: 2px solid var(--admin-border-strong);
+  background: var(--admin-input-bg);
+}
+
+.admin-drop-card h2,
+.admin-drop-card p {
+  margin: 0;
+}
+
+.admin-drop-card p {
+  margin-top: var(--space-xs);
+  color: var(--color-gray);
+}
+
+.admin-drop-card .admin-btn {
+  margin-top: 0;
+  text-decoration: none;
+}
+
+.admin-drop-detail {
+  margin-top: var(--space-2xl);
+}
+
+.admin-drop-detail > .admin-nav-link {
+  margin: 0 0 var(--space-xl);
+}
+
+.admin-add-shirt-action {
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+
+.admin-add-shirt-action + .admin-product-list {
+  margin-top: 0;
+}
+
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  padding: var(--space-md);
+}
+
+.admin-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgba(26, 26, 26, 0.72);
+  cursor: default;
+}
+
+.admin-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 42rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  background: var(--color-warm-white);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.3);
+}
+
+.admin-modal__close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-charcoal);
+  font-size: 1.75rem;
+  cursor: pointer;
+}
+
+.admin-modal .admin-upload-card {
+  padding-top: calc(var(--space-xl) + var(--touch-min));
+  border: 0;
+}
+
+.admin-form-step {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.admin-form-step[hidden] {
+  display: none;
+}
+
+.admin-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
 .admin-upload-list {
   display: grid;
   gap: var(--space-lg);
@@ -1641,16 +1992,70 @@ body.shirt-detail-open {
 }
 
 .admin-current-images {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-md);
   margin-top: var(--space-xl);
 }
 
-.admin-current-images img {
+.admin-current-image {
+  position: relative;
+  width: 8rem;
+  margin: 0;
+}
+
+.admin-current-image img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 8rem;
+  object-fit: cover;
   border: 1px solid var(--admin-border);
   border-radius: var(--radius);
+}
+
+.admin-current-image__number {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.35rem;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 999px;
+  background: var(--color-crimson);
+  color: var(--color-cream);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.admin-content-section {
+  margin-top: var(--space-2xl);
+  scroll-margin-top: var(--space-xl);
+}
+
+.admin-content-section > h2 {
+  margin: 0 0 var(--space-md);
+}
+
+.admin-success {
+  margin: 0 0 var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid #1a5c2e;
+  background: #e8f5eb;
+  color: #1a5c2e;
+  font-weight: 600;
+}
+
+.admin-checkbox-label {
+  display: flex !important;
+  grid-template-columns: none;
+  align-items: center;
+  gap: var(--space-sm) !important;
+}
+
+.admin-checkbox-label input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
 }

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import { BuyOnWhatsAppButton } from "@/components/BuyOnWhatsAppButton";
 import { fetchCatalog, findShirt, formatDropTitle } from "@/lib/catalog";
+import { formatPrice } from "@/lib/price";
 
 export const revalidate = 60;
 
@@ -34,7 +35,10 @@ export default async function ProductPage({
                 <p className="shirt-detail__drop">{formatDropTitle(drop)}</p>
                 <h1 className="shirt-detail__title">{shirt.name || shirt.code}</h1>
                 {shirt.tagline && <p className="shirt-detail__tagline">{shirt.tagline}</p>}
-                {shirt.price && <p className="shirt-detail__price">{shirt.price}</p>}
+                {shirt.price && <p className="shirt-detail__price">
+                  <span className={shirt.discountedPrice ? "price--original" : ""}>{formatPrice(shirt.price)}</span>
+                  {shirt.discountedPrice && <span className="price--discounted">{formatPrice(shirt.discountedPrice)}</span>}
+                </p>}
                 {shirt.sizes.length > 0 && (
                   <div className="shirt-detail__sizes" aria-label="Available sizes">
                     {shirt.sizes.map((s) => (

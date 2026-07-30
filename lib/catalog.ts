@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { FALLBACK_DROPS, FALLBACK_SETTINGS } from "@/lib/site-config";
+import { DEFAULT_SETTINGS } from "@/lib/site-config";
 import type { Drop, FlatShirt, Shirt, SiteSettings } from "@/lib/types";
 
 export function formatShirtCode(drop: Drop, shirt: Shirt) {
@@ -16,7 +16,7 @@ export function shirtKey(drop: Drop, shirt: Shirt) {
 }
 
 export function isBuyable(drop: Drop, shirt: Shirt) {
-  return !shirt.soldOut && drop.status !== "sold_out";
+  return !shirt.soldOut && drop.status !== "sold_out" && shirt.sizes.length > 0;
 }
 
 export function flattenShirt(drop: Drop, shirt: Shirt): FlatShirt {
@@ -31,7 +31,7 @@ export function flattenShirt(drop: Drop, shirt: Shirt): FlatShirt {
 }
 
 function normalizeImage(url: string) {
-  if (!url) return "/assets/shirts/shirt-01.jpg";
+  if (!url) return "";
   if (url.startsWith("http") || url.startsWith("/")) return url;
   return `/${url.replace(/^assets\//, "assets/")}`;
 }
@@ -56,6 +56,7 @@ function mapDbDrop(row: Record<string, unknown>): Drop {
           name: (s.name as string) || null,
           tagline: (s.tagline as string) || null,
           price: (s.price as string) || null,
+          discountedPrice: (s.discounted_price as string) || null,
           image: normalizeImage(s.image_url as string),
           sizes: sizesRaw.map((x) => x.size),
           soldOut: !!s.sold_out,
@@ -69,26 +70,25 @@ export async function fetchCatalog(): Promise<{ drops: Drop[]; settings: SiteSet
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
-    return { drops: FALLBACK_DROPS, settings: FALLBACK_SETTINGS };
+    return { drops: [], settings: DEFAULT_SETTINGS };
   }
 
   try {
     // Public catalog read — plain client (no cookies). SSR cookie client can throw
     // outside a request or fail silently into FALLBACK_DROPS (shirts without id).
     const supabase = createClient(url, key, { auth: { persistSession: false } });
-    const { data, error } = await supabase
-      .from("drops")
-      .select("*, shirts(*, shirt_sizes(size))")
-      .order("sort_order", { ascending: true });
+    const [catalogResult, settingsResult] = await Promise.all([
+      supabase
+        .from("drops")
+        .select("*, shirts(*, shirt_sizes(size))")
+        .order("sort_order", { ascending: true }),
+      supabase.from("site_settings").select("key, value"),
+    ]);
 
-    if (error || !data?.length) {
-      return { drops: FALLBACK_DROPS, settings: FALLBACK_SETTINGS };
-    }
+    const drops = catalogResult.error ? [] : (catalogResult.data || []).map(mapDbDrop);
+    let settings = { ...DEFAULT_SETTINGS };
 
-    const drops = data.map(mapDbDrop);
-    let settings = { ...FALLBACK_SETTINGS };
-
-    const { data: settingsRows } = await supabase.from("site_settings").select("key, value");
+    const settingsRows = settingsResult.data;
     if (settingsRows) {
       for (const row of settingsRows) {
         if (row.key === "active_drop_id" && typeof row.value === "string") {
@@ -111,36 +111,32 @@ export async function fetchCatalog(): Promise<{ drops: Drop[]; settings: SiteSet
 
     return { drops, settings };
   } catch {
-    return { drops: FALLBACK_DROPS, settings: FALLBACK_SETTINGS };
+    return { drops: [], settings: DEFAULT_SETTINGS };
   }
 }
 
 export function getActiveDrop(drops: Drop[], activeDropId: string) {
-  return drops.find((d) => d.id === activeDropId) || drops[0] || null;
+  return (
+    drops.find((drop) => drop.id === activeDropId && drop.status !== "sold_out") ||
+    drops.find((drop) => drop.status !== "sold_out") ||
+    null
+  );
 }
 
 export function getArchiveDrops(drops: Drop[]) {
   return drops
-    .filter((d) => d.status === "sold_out")
+    .map((drop) => ({
+      ...drop,
+      shirts: drop.status === "sold_out" ? drop.shirts : drop.shirts.filter((shirt) => shirt.soldOut),
+    }))
+    .filter((drop) => drop.status === "sold_out" || drop.shirts.length > 0)
     .sort((a, b) => b.year - a.year || String(b.number).localeCompare(String(a.number)));
 }
 
 export function getPrimaryShirts(drops: Drop[], activeDropId: string) {
   const drop = getActiveDrop(drops, activeDropId);
   if (!drop) return [];
-  return drop.shirts.map((s) => flattenShirt(drop, s));
-}
-
-export function getCarryOverShirts(drops: Drop[], activeDropId: string) {
-  const result: FlatShirt[] = [];
-  drops.forEach((drop) => {
-    if (drop.id === activeDropId || drop.status === "sold_out") return;
-    drop.shirts.forEach((shirt) => {
-      const item = flattenShirt(drop, shirt);
-      if (!item.soldOut) result.push(item);
-    });
-  });
-  return result;
+  return drop.shirts.filter((shirt) => !shirt.soldOut).map((shirt) => flattenShirt(drop, shirt));
 }
 
 export function findShirt(drops: Drop[], year: string, dropNum: string, code: string) {

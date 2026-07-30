@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { FlatShirt } from "@/lib/types";
+import { formatPrice } from "@/lib/price";
 
 export function BuyOnWhatsAppButton({
   item,
@@ -27,7 +28,9 @@ export function BuyOnWhatsAppButton({
       "",
       `${item.shirt.name || item.shirt.code} (${item.code})`,
       `Size: ${size}`,
-      item.shirt.price ? `Price: ${item.shirt.price}` : "",
+      item.shirt.discountedPrice
+        ? `Price: ${formatPrice(item.shirt.discountedPrice)} (was ${formatPrice(item.shirt.price)})`
+        : item.shirt.price ? `Price: ${formatPrice(item.shirt.price)}` : "",
       `Image: ${imageUrl}`,
       `Product: ${productUrl}`,
     ]

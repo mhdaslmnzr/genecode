@@ -5,17 +5,16 @@ import { Footer } from "@/components/Footer";
 import {
   fetchCatalog,
   getActiveDrop,
-  getCarryOverShirts,
   getPrimaryShirts,
 } from "@/lib/catalog";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function HomePage() {
   const { drops, settings } = await fetchCatalog();
   const activeDrop = getActiveDrop(drops, settings.activeDropId);
   const primary = getPrimaryShirts(drops, settings.activeDropId);
-  const carryOver = getCarryOverShirts(drops, settings.activeDropId);
 
   return (
     <>
@@ -39,15 +38,6 @@ export default async function HomePage() {
             <ShirtGrid items={primary} />
           </div>
         </section>
-
-        {carryOver.length > 0 && (
-          <section className="carry-over" id="carry-over">
-            <div className="carry-over__inner">
-              <h2 className="carry-over__heading">STILL AVAILABLE</h2>
-              <ShirtGrid items={carryOver} />
-            </div>
-          </section>
-        )}
 
         <section className="about" id="about" aria-labelledby="about-heading">
           <div className="about__inner">

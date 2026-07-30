@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { FlatShirt } from "@/lib/types";
+import { formatPrice } from "@/lib/price";
 
 export function ShirtCard({ item }: { item: FlatShirt }) {
   const { drop, shirt, code, buyable, soldOut } = item;
@@ -34,7 +35,10 @@ export function ShirtCard({ item }: { item: FlatShirt }) {
           <p className="shirt-card__id">{code}</p>
           <h3 className="shirt-card__name">{displayName}</h3>
           {shirt.tagline && <p className="shirt-card__tagline">{shirt.tagline}</p>}
-          {shirt.price && <p className="shirt-card__price">{shirt.price}</p>}
+          {shirt.price && <p className="shirt-card__price">
+            <span className={shirt.discountedPrice ? "price--original" : ""}>{formatPrice(shirt.price)}</span>
+            {shirt.discountedPrice && <span className="price--discounted">{formatPrice(shirt.discountedPrice)}</span>}
+          </p>}
           {sizesHtml}
         </div>
       </Link>

@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { fetchCatalog, formatDropTitle } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AddDropForm, AddShirtForm } from "@/components/AdminCatalogForms";
+import { AdminDeleteButton } from "@/components/AdminDeleteButton";
 
 const ALL_SIZES = ["S", "M", "L", "XL"] as const;
 
@@ -117,6 +118,23 @@ async function archiveShirt(formData: FormData) {
   refreshCatalog();
 }
 
+async function deleteShirt(formData: FormData) {
+  "use server";
+  const admin = createAdminClient();
+  const shirtId = String(formData.get("shirtId") || "");
+  if (!admin || !shirtId) return;
+  const { data: shirt } = await admin.from("shirts").select("image_url").eq("id", shirtId).maybeSingle();
+  await admin.from("shirts").delete().eq("id", shirtId);
+  if (shirt?.image_url) {
+    const marker = "/storage/v1/object/public/site-content/";
+    try {
+      const pathname = new URL(shirt.image_url).pathname;
+      if (pathname.includes(marker)) await admin.storage.from("site-content").remove([decodeURIComponent(pathname.split(marker)[1])]);
+    } catch {}
+  }
+  refreshCatalog();
+}
+
 async function updateShirtPrices(formData: FormData) {
   "use server";
   const admin = createAdminClient();
@@ -147,6 +165,26 @@ async function archiveDrop(formData: FormData) {
       .maybeSingle();
     if (nextDrop) await admin.from("site_settings").upsert({ key: "active_drop_id", value: nextDrop.id });
   }
+  refreshCatalog();
+}
+
+async function deleteDrop(formData: FormData) {
+  "use server";
+  const admin = createAdminClient();
+  const dropId = String(formData.get("dropId") || "");
+  if (!admin || !dropId) return;
+  const { data: shirts } = await admin.from("shirts").select("image_url").eq("drop_id", dropId);
+  await admin.from("drops").delete().eq("id", dropId);
+  const marker = "/storage/v1/object/public/site-content/";
+  const paths = (shirts || []).flatMap((shirt) => {
+    try {
+      const pathname = new URL(shirt.image_url).pathname;
+      return pathname.includes(marker) ? [decodeURIComponent(pathname.split(marker)[1])] : [];
+    } catch { return []; }
+  });
+  if (paths.length) await admin.storage.from("site-content").remove(paths);
+  const { data: nextDrop } = await admin.from("drops").select("id").eq("status", "active").order("sort_order").limit(1).maybeSingle();
+  await admin.from("site_settings").upsert({ key: "active_drop_id", value: nextDrop?.id || "" });
   refreshCatalog();
 }
 
@@ -203,6 +241,10 @@ export default async function AdminDropsPage({
               <input type="hidden" name="dropId" value={selectedDrop.id} />
               <button className="admin-btn admin-btn--ghost" type="submit">Move drop to archive</button>
             </form>
+            <form action={deleteDrop}>
+              <input type="hidden" name="dropId" value={selectedDrop.id} />
+              <AdminDeleteButton label="Delete drop" />
+            </form>
           </div>
           <div className="admin-add-shirt-action">
             <AddShirtForm action={createShirt} dropId={selectedDrop.id} dropLabel={selectedDrop.label} />
@@ -247,6 +289,10 @@ export default async function AdminDropsPage({
                   <form action={archiveShirt}>
                     <input type="hidden" name="shirtId" value={shirt.id} />
                     <button className="admin-btn admin-btn--ghost" type="submit">Move shirt to archive</button>
+                  </form>
+                  <form action={deleteShirt}>
+                    <input type="hidden" name="shirtId" value={shirt.id} />
+                    <AdminDeleteButton label="Delete shirt" />
                   </form>
                 </div>}
               </li>

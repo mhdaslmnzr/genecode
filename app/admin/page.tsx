@@ -18,6 +18,7 @@ export default async function AdminDashboard() {
               <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/drops">Manage catalog</Link></li>
               <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/archive">Archive</Link></li>
               <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/ticker">Edit ticker</Link></li>
+              <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/code-gallery">The Code gallery</Link></li>
               <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/content">Testimonials</Link></li>
             </ul>
             <AdminLogoutButton />

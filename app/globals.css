@@ -196,7 +196,7 @@ a {
   align-items: center;
   gap: var(--space-lg);
   white-space: nowrap;
-  animation: ticker-scroll 28s linear infinite;
+  animation: ticker-scroll 10s linear infinite;
   padding-inline: var(--page-pad-x);
   font-weight: 500;
   font-size: clamp(0.625rem, 1.2vw + 0.5rem, 0.75rem);
@@ -661,6 +661,132 @@ a {
   align-items: center;
 }
 
+.home-scroll {
+  height: 100vh;
+  height: 100svh;
+  overflow-y: auto;
+  overflow-x: clip;
+  scroll-snap-type: y proximity;
+  overscroll-behavior-y: contain;
+}
+
+.home-scroll main > section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.home-scroll main > section:not(.hero) {
+  background: #f0eeeb;
+}
+
+.cursor-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cursor-grid canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.home-scroll .about {
+  background: #f0eeeb;
+}
+
+.code-dome {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  perspective: 900px;
+  pointer-events: none;
+}
+
+.code-dome__sphere {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 1px;
+  transform-style: preserve-3d;
+  animation: code-dome-rotate 70s linear infinite;
+}
+
+.code-dome__tile {
+  position: absolute;
+  left: -5rem;
+  top: -6.5rem;
+  width: 10rem;
+  height: 13rem;
+  overflow: hidden;
+  border-radius: 0.35rem;
+  transform: rotateY(var(--dome-angle)) rotateX(var(--dome-tilt)) translateZ(clamp(18rem, 38vw, 31rem));
+  backface-visibility: hidden;
+  opacity: 0.2;
+}
+
+.code-dome__tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(0.9);
+}
+
+.code-dome__wash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(240, 238, 235, 0.5) 0%, rgba(240, 238, 235, 0.7) 42%, rgba(240, 238, 235, 0.92) 100%);
+}
+
+@keyframes code-dome-rotate {
+  from { transform: rotateX(-4deg) rotateY(0deg); }
+  to { transform: rotateX(-4deg) rotateY(360deg); }
+}
+
+@media (max-width: 640px) {
+  .code-dome__sphere { animation-duration: 90s; }
+  .code-dome__tile {
+    width: 7rem;
+    height: 9rem;
+    left: -3.5rem;
+    top: -4.5rem;
+    transform: rotateY(var(--dome-angle)) rotateX(var(--dome-tilt)) translateZ(18rem);
+    opacity: 0.16;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-dome__sphere { animation: none; }
+}
+
+.hero__inner,
+.collection__inner,
+.about__inner,
+.team__inner,
+.insta-feed__inner,
+.vault__inner,
+.testimonials__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.home-scroll .hero,
+.home-scroll .about,
+.home-scroll .team,
+.home-scroll .insta-feed,
+.home-scroll .vault,
+.home-scroll .testimonials {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
 .team {
   padding-block: var(--space-section-y);
   padding-inline: var(--page-pad-x);
@@ -831,7 +957,7 @@ a {
   align-items: center;
   gap: var(--space-lg);
   width: max-content;
-  animation: feedback-scroll 32s linear infinite;
+  animation: feedback-scroll 120s linear infinite;
 }
 
 .testimonial-card {
@@ -855,6 +981,7 @@ a {
 @media (prefers-reduced-motion: reduce) {
   .testimonials__track { animation: none; }
   .testimonials__scroller { overflow-x: auto; }
+  .home-scroll { scroll-snap-type: none; }
 }
 
 .content-image-placeholder {
@@ -1595,6 +1722,17 @@ body.shirt-detail-open {
   min-width: 0;
 }
 
+.admin-btn--danger {
+  border-color: #6f1111;
+  background: #6f1111;
+  color: #fff;
+}
+
+.admin-btn--danger:hover:not(:disabled) {
+  border-color: #1a1a1a;
+  background: #1a1a1a;
+}
+
 .admin-price-form {
   flex-basis: 100%;
   display: flex;
@@ -1674,6 +1812,15 @@ body.shirt-detail-open {
   color: var(--color-gray);
   font-style: italic;
   max-width: 14rem;
+}
+
+.admin-hint--wide {
+  max-width: none;
+  padding: var(--space-sm) var(--space-md);
+  border-left: 3px solid var(--color-crimson);
+  background: var(--color-light-gray);
+  color: var(--color-charcoal);
+  font-style: normal;
 }
 
 .admin-form-inline {

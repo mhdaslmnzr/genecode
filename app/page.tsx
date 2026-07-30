@@ -2,6 +2,8 @@ import { Ticker } from "@/components/Ticker";
 import { ShirtGrid } from "@/components/ShirtGrid";
 import { VaultSection } from "@/components/VaultSection";
 import { Footer } from "@/components/Footer";
+import { SectionCursorGrid } from "@/components/CursorGrid";
+import { CodeDomeBackground } from "@/components/CodeDomeBackground";
 import {
   fetchCatalog,
   getActiveDrop,
@@ -17,11 +19,12 @@ export default async function HomePage() {
   const primary = getPrimaryShirts(drops, settings.activeDropId);
 
   return (
-    <>
+    <div className="home-scroll">
       <a className="skip-link" href="#collection">Skip to collection</a>
 
       <main>
         <section className="hero" id="hero" aria-label="Introduction">
+          <SectionCursorGrid hero />
           <Ticker settings={settings} />
           <div className="hero__inner">
             <img className="hero__logo" src="/assets/logo.png" alt="Genecode" />
@@ -33,6 +36,7 @@ export default async function HomePage() {
         </section>
 
         <section className="collection" id="collection" aria-labelledby="collection-heading">
+          <SectionCursorGrid />
           <div className="collection__inner">
             <h2 className="collection__heading" id="collection-heading">{activeDrop?.label || "Drop"}</h2>
             <ShirtGrid items={primary} />
@@ -40,6 +44,7 @@ export default async function HomePage() {
         </section>
 
         <section className="about" id="about" aria-labelledby="about-heading">
+          <CodeDomeBackground images={settings.codeGalleryImages} />
           <div className="about__inner">
             <h2 className="about__heading" id="about-heading">The code</h2>
             <p className="about__text">{settings.aboutText}</p>
@@ -47,6 +52,7 @@ export default async function HomePage() {
         </section>
 
         <section className="team" id="team" aria-labelledby="team-heading">
+          <SectionCursorGrid />
           <div className="team__inner">
             <h2 className="team__heading" id="team-heading">BEHIND THE CODE</h2>
             <p className="team__body">
@@ -57,6 +63,7 @@ export default async function HomePage() {
         </section>
 
         <section className="insta-feed" id="insta-feed" aria-labelledby="insta-heading">
+          <SectionCursorGrid />
           <div className="insta-feed__inner">
             <h2 className="insta-feed__heading" id="insta-heading">FOLLOW THE DROP</h2>
             <iframe
@@ -71,6 +78,7 @@ export default async function HomePage() {
         <VaultSection />
 
         <section className="testimonials" id="testimonials" aria-labelledby="testimonials-heading">
+          <SectionCursorGrid />
           <div className="testimonials__inner">
             <h2 className="testimonials__heading" id="testimonials-heading">WHAT THEY SAY</h2>
             {settings.testimonialImages.length ? (
@@ -91,6 +99,6 @@ export default async function HomePage() {
       </main>
 
       <Footer settings={settings} />
-    </>
+    </div>
   );
 }

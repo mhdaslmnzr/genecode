@@ -106,6 +106,12 @@ export async function fetchCatalog(): Promise<{ drops: Drop[]; settings: SiteSet
             testimonialImages: row.value.filter((value): value is string => typeof value === "string"),
           };
         }
+        if (row.key === "code_gallery_images" && Array.isArray(row.value)) {
+          settings = {
+            ...settings,
+            codeGalleryImages: row.value.filter((value): value is string => typeof value === "string"),
+          };
+        }
       }
     }
 

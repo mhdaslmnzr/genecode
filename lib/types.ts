@@ -39,4 +39,5 @@ export interface SiteSettings {
   aboutText: string;
   ticker: { enabled: boolean; messages: string[] };
   testimonialImages: string[];
+  codeGalleryImages: string[];
 }

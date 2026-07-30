@@ -13,4 +13,5 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     ],
   },
   testimonialImages: [],
+  codeGalleryImages: [],
 };

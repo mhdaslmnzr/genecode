@@ -40,6 +40,9 @@ export default async function AdminTickerPage({ searchParams }: { searchParams: 
             Ticker messages — one message per line
             <textarea name="messages" rows={5} defaultValue={settings.ticker.messages.join("\n")} />
           </label>
+          <p className="admin-hint admin-hint--wide">
+            Tip: Always use four ticker messages and make each one a longer sentence. A fuller ticker track moves more smoothly and makes the scrolling speed feel faster and more consistent.
+          </p>
           <button className="admin-btn" type="submit">Save ticker</button>
         </form>
       </section>

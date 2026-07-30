@@ -3,11 +3,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { fetchCatalog } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { AdminNotice } from "@/components/AdminNotice";
 
 async function updateTicker(formData: FormData) {
   "use server";
   const admin = createAdminClient();
-  if (!admin) throw new Error("Supabase admin client is not configured.");
+  if (!admin) redirect("/admin/ticker?error=Supabase+is+not+configured");
   const messages = String(formData.get("messages") || "")
     .split(/\r?\n/)
     .map((message) => message.trim())
@@ -16,21 +17,23 @@ async function updateTicker(formData: FormData) {
     key: "ticker",
     value: { enabled: formData.get("enabled") === "on", messages },
   });
-  if (error) throw new Error(`Unable to save ticker: ${error.message}`);
+  if (error) redirect("/admin/ticker?error=Unable+to+save+ticker");
   revalidatePath("/");
   revalidatePath("/admin/ticker");
   redirect("/admin/ticker?saved=1");
 }
 
-export default async function AdminTickerPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
+export default async function AdminTickerPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
   const { settings } = await fetchCatalog();
-  const saved = (await searchParams).saved === "1";
+  const query = await searchParams;
+  const saved = query.saved === "1";
   return (
     <main><section className="collection"><div className="collection__inner admin-content">
       <h1 className="collection__heading">Edit ticker</h1>
       <Link className="admin-nav-link" href="/admin">← Admin home</Link>
       <section className="admin-content-section">
         {saved && <p className="admin-success" role="status">Ticker saved. The homepage now uses these messages.</p>}
+        {query.error && <AdminNotice error={query.error} />}
         <form action={updateTicker} className="admin-upload-card">
           <label className="admin-checkbox-label">
             <input type="checkbox" name="enabled" defaultChecked={settings.ticker.enabled} />

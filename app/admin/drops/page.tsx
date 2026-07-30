@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { fetchCatalog, formatDropTitle } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AddDropForm, AddShirtForm } from "@/components/AdminCatalogForms";
 import { AdminDeleteButton } from "@/components/AdminDeleteButton";
+import { AdminNotice } from "@/components/AdminNotice";
 
 const ALL_SIZES = ["S", "M", "L", "XL"] as const;
 
@@ -29,7 +31,7 @@ async function createDrop(formData: FormData) {
     .order("sort_order", { ascending: false })
     .limit(1)
     .maybeSingle();
-  await admin.from("drops").insert({
+  const { error } = await admin.from("drops").insert({
     id,
     year,
     number,
@@ -40,6 +42,7 @@ async function createDrop(formData: FormData) {
     sort_order: (lastDrop?.sort_order ?? -1) + 1,
   });
   refreshCatalog();
+  redirect(error ? "/admin/drops?error=Unable+to+publish+drop" : "/admin/drops?success=Drop+published");
 }
 
 async function createShirt(formData: FormData) {
@@ -59,13 +62,13 @@ async function createShirt(formData: FormData) {
     !(image instanceof File) ||
     !image.size ||
     !image.type.startsWith("image/")
-  ) return;
+  ) redirect(`/admin/drops?drop=${encodeURIComponent(dropId)}&error=Check+the+shirt+details+and+image`);
   const extension = image.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
   const storagePath = `products/${dropId}-${code}-${Date.now()}.${extension}`;
   const { error: imageError } = await admin.storage
     .from("site-content")
     .upload(storagePath, new Uint8Array(await image.arrayBuffer()), { contentType: image.type });
-  if (imageError) return;
+  if (imageError) redirect(`/admin/drops?drop=${encodeURIComponent(dropId)}&error=Image+upload+failed`);
   const imageUrl = admin.storage.from("site-content").getPublicUrl(storagePath).data.publicUrl;
   const { data: lastShirt } = await admin
     .from("shirts")
@@ -93,38 +96,46 @@ async function createShirt(formData: FormData) {
     await admin.from("shirt_sizes").insert(ALL_SIZES.map((size) => ({ shirt_id: data.id, size })));
   }
   refreshCatalog();
+  redirect(error ? `/admin/drops?drop=${encodeURIComponent(dropId)}&error=Unable+to+publish+shirt` : `/admin/drops?drop=${encodeURIComponent(dropId)}&success=Shirt+published`);
 }
 
 async function toggleSizeAvailability(formData: FormData) {
   "use server";
   const admin = createAdminClient();
   const shirtId = String(formData.get("shirtId") || "");
+  const dropId = String(formData.get("dropId") || "");
   const size = String(formData.get("size") || "").toUpperCase();
   const available = formData.get("available") === "true";
   if (!admin || !shirtId || !ALL_SIZES.includes(size as (typeof ALL_SIZES)[number])) return;
+  let error;
   if (available) {
-    await admin.from("shirt_sizes").delete().eq("shirt_id", shirtId).eq("size", size);
+    ({ error } = await admin.from("shirt_sizes").delete().eq("shirt_id", shirtId).eq("size", size));
   } else {
-    await admin.from("shirt_sizes").upsert({ shirt_id: shirtId, size });
+    ({ error } = await admin.from("shirt_sizes").upsert({ shirt_id: shirtId, size }));
   }
   refreshCatalog();
+  redirect(error ? `/admin/drops?drop=${encodeURIComponent(dropId)}&error=Unable+to+update+size` : `/admin/drops?drop=${encodeURIComponent(dropId)}&success=Size+availability+updated`);
 }
 
 async function archiveShirt(formData: FormData) {
   "use server";
   const admin = createAdminClient();
   const shirtId = String(formData.get("shirtId") || "");
-  if (admin && shirtId) await admin.from("shirts").update({ sold_out: true }).eq("id", shirtId);
+  const dropId = String(formData.get("dropId") || "");
+  if (!admin || !shirtId) redirect(`/admin/drops?drop=${encodeURIComponent(dropId)}&error=Unable+to+archive+shirt`);
+  const { error } = await admin.from("shirts").update({ sold_out: true }).eq("id", shirtId);
   refreshCatalog();
+  redirect(error ? `/admin/drops?drop=${encodeURIComponent(dropId)}&error=Unable+to+archive+shirt` : `/admin/drops?drop=${encodeURIComponent(dropId)}&success=Shirt+moved+to+archive`);
 }
 
 async function deleteShirt(formData: FormData) {
   "use server";
   const admin = createAdminClient();
   const shirtId = String(formData.get("shirtId") || "");
+  const dropId = String(formData.get("dropId") || "");
   if (!admin || !shirtId) return;
   const { data: shirt } = await admin.from("shirts").select("image_url").eq("id", shirtId).maybeSingle();
-  await admin.from("shirts").delete().eq("id", shirtId);
+  const { error: deleteError } = await admin.from("shirts").delete().eq("id", shirtId);
   if (shirt?.image_url) {
     const marker = "/storage/v1/object/public/site-content/";
     try {
@@ -133,6 +144,7 @@ async function deleteShirt(formData: FormData) {
     } catch {}
   }
   refreshCatalog();
+  redirect(deleteError ? `/admin/drops?drop=${encodeURIComponent(dropId)}&error=Unable+to+delete+shirt` : `/admin/drops?drop=${encodeURIComponent(dropId)}&success=Shirt+deleted+permanently`);
 }
 
 async function updateShirtPrices(formData: FormData) {
@@ -141,12 +153,14 @@ async function updateShirtPrices(formData: FormData) {
   const shirtId = String(formData.get("shirtId") || "");
   const price = String(formData.get("price") || "").trim();
   const discountedPrice = String(formData.get("discountedPrice") || "").trim();
+  const dropId = String(formData.get("dropId") || "");
   if (!admin || !shirtId || !/^\d+$/.test(price) || (discountedPrice && !/^\d+$/.test(discountedPrice))) return;
-  await admin
+  const { error } = await admin
     .from("shirts")
     .update({ price, discounted_price: discountedPrice || null })
     .eq("id", shirtId);
   refreshCatalog();
+  redirect(error ? `/admin/drops?drop=${encodeURIComponent(dropId)}&error=Unable+to+save+prices` : `/admin/drops?drop=${encodeURIComponent(dropId)}&success=Prices+saved`);
 }
 
 async function archiveDrop(formData: FormData) {
@@ -154,7 +168,8 @@ async function archiveDrop(formData: FormData) {
   const admin = createAdminClient();
   const dropId = String(formData.get("dropId") || "");
   if (admin && dropId) {
-    await admin.from("drops").update({ status: "sold_out" }).eq("id", dropId);
+    const { error } = await admin.from("drops").update({ status: "sold_out" }).eq("id", dropId);
+    if (error) redirect(`/admin/drops?drop=${encodeURIComponent(dropId)}&error=Unable+to+archive+drop`);
     const { data: nextDrop } = await admin
       .from("drops")
       .select("id")
@@ -166,6 +181,7 @@ async function archiveDrop(formData: FormData) {
     if (nextDrop) await admin.from("site_settings").upsert({ key: "active_drop_id", value: nextDrop.id });
   }
   refreshCatalog();
+  redirect("/admin/drops?success=Drop+moved+to+archive");
 }
 
 async function deleteDrop(formData: FormData) {
@@ -174,7 +190,7 @@ async function deleteDrop(formData: FormData) {
   const dropId = String(formData.get("dropId") || "");
   if (!admin || !dropId) return;
   const { data: shirts } = await admin.from("shirts").select("image_url").eq("drop_id", dropId);
-  await admin.from("drops").delete().eq("id", dropId);
+  const { error: deleteError } = await admin.from("drops").delete().eq("id", dropId);
   const marker = "/storage/v1/object/public/site-content/";
   const paths = (shirts || []).flatMap((shirt) => {
     try {
@@ -186,30 +202,35 @@ async function deleteDrop(formData: FormData) {
   const { data: nextDrop } = await admin.from("drops").select("id").eq("status", "active").order("sort_order").limit(1).maybeSingle();
   await admin.from("site_settings").upsert({ key: "active_drop_id", value: nextDrop?.id || "" });
   refreshCatalog();
+  redirect(deleteError ? "/admin/drops?error=Unable+to+delete+drop" : "/admin/drops?success=Drop+deleted+permanently");
 }
 
 async function makeActiveDrop(formData: FormData) {
   "use server";
   const admin = createAdminClient();
   const dropId = String(formData.get("dropId") || "");
-  if (admin && dropId) await admin.from("site_settings").upsert({ key: "active_drop_id", value: dropId });
+  if (!admin || !dropId) redirect(`/admin/drops?drop=${encodeURIComponent(dropId)}&error=Unable+to+update+homepage`);
+  const { error } = await admin.from("site_settings").upsert({ key: "active_drop_id", value: dropId });
   refreshCatalog();
+  redirect(error ? `/admin/drops?drop=${encodeURIComponent(dropId)}&error=Unable+to+update+homepage` : `/admin/drops?drop=${encodeURIComponent(dropId)}&success=Homepage+drop+updated`);
 }
 
 export default async function AdminDropsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ drop?: string }>;
+  searchParams: Promise<{ drop?: string; success?: string; error?: string }>;
 }) {
   const { drops, settings } = await fetchCatalog();
   const liveDrops = drops.filter((drop) => drop.status !== "sold_out");
-  const selectedId = (await searchParams).drop;
+  const query = await searchParams;
+  const selectedId = query.drop;
   const selectedDrop = liveDrops.find((drop) => drop.id === selectedId);
 
   return (
     <main><section className="collection"><div className="collection__inner admin-content">
       <h1 className="collection__heading">Manage catalog</h1>
       <Link className="admin-nav-link" href="/admin">← Admin home</Link>
+      <AdminNotice success={query.success} error={query.error} />
 
       {!selectedDrop ? <>
         <div className="admin-primary-action"><AddDropForm action={createDrop} /></div>
@@ -257,6 +278,7 @@ export default async function AdminDropsPage({
                   <span>{shirt.name || "Untitled"}</span>
                   {shirt.id && <form action={updateShirtPrices} className="admin-price-form">
                     <input type="hidden" name="shirtId" value={shirt.id} />
+                    <input type="hidden" name="dropId" value={selectedDrop.id} />
                     <label>
                       Original price
                       <span className="admin-price-input"><b>₹</b><input name="price" type="number" min="0" step="1" inputMode="numeric" defaultValue={shirt.price?.replace(/[^\d]/g, "") || ""} required /></span>
@@ -274,6 +296,7 @@ export default async function AdminDropsPage({
                       const available = shirt.sizes.includes(size);
                       return <form action={toggleSizeAvailability} key={size}>
                         <input type="hidden" name="shirtId" value={shirt.id} />
+                        <input type="hidden" name="dropId" value={selectedDrop.id} />
                         <input type="hidden" name="size" value={size} />
                         <input type="hidden" name="available" value={String(available)} />
                         <button
@@ -288,10 +311,12 @@ export default async function AdminDropsPage({
                   </div>
                   <form action={archiveShirt}>
                     <input type="hidden" name="shirtId" value={shirt.id} />
+                    <input type="hidden" name="dropId" value={selectedDrop.id} />
                     <button className="admin-btn admin-btn--ghost" type="submit">Move shirt to archive</button>
                   </form>
                   <form action={deleteShirt}>
                     <input type="hidden" name="shirtId" value={shirt.id} />
+                    <input type="hidden" name="dropId" value={selectedDrop.id} />
                     <AdminDeleteButton label="Delete shirt" />
                   </form>
                 </div>}

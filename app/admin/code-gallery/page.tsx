@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { AdminNotice } from "@/components/AdminNotice";
 import { fetchCatalog } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -9,9 +11,9 @@ const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 async function uploadCodeImages(formData: FormData) {
   "use server";
   const files = formData.getAll("images").filter((value): value is File => value instanceof File && value.size > 0);
-  if (!files.length || files.some((file) => !file.type.startsWith("image/") || file.size > MAX_IMAGE_BYTES)) return;
+  if (!files.length || files.some((file) => !file.type.startsWith("image/") || file.size > MAX_IMAGE_BYTES)) redirect("/admin/code-gallery?error=Choose+valid+images+within+the+upload+limit");
   const admin = createAdminClient();
-  if (!admin) return;
+  if (!admin) redirect("/admin/code-gallery?error=Supabase+is+not+configured");
   const urls: string[] = [];
   for (const [index, file] of files.entries()) {
     const extension = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
@@ -26,13 +28,14 @@ async function uploadCodeImages(formData: FormData) {
   }
   revalidatePath("/");
   revalidatePath("/admin/code-gallery");
+  redirect(urls.length ? "/admin/code-gallery?success=Gallery+images+uploaded" : "/admin/code-gallery?error=Upload+failed");
 }
 
 async function removeCodeImage(formData: FormData) {
   "use server";
   const imageUrl = String(formData.get("imageUrl") || "");
   const admin = createAdminClient();
-  if (!admin || !imageUrl) return;
+  if (!admin || !imageUrl) redirect("/admin/code-gallery?error=Unable+to+remove+image");
   const { data } = await admin.from("site_settings").select("value").eq("key", "code_gallery_images").maybeSingle();
   const existing = Array.isArray(data?.value) ? data.value.filter((value): value is string => typeof value === "string") : [];
   await admin.from("site_settings").upsert({ key: "code_gallery_images", value: existing.filter((value) => value !== imageUrl) });
@@ -43,13 +46,16 @@ async function removeCodeImage(formData: FormData) {
   } catch {}
   revalidatePath("/");
   revalidatePath("/admin/code-gallery");
+  redirect("/admin/code-gallery?success=Gallery+image+removed");
 }
 
-export default async function AdminCodeGalleryPage() {
+export default async function AdminCodeGalleryPage({ searchParams }: { searchParams: Promise<{ success?: string; error?: string }> }) {
   const { settings } = await fetchCatalog();
+  const notice = await searchParams;
   return <main><section className="collection"><div className="collection__inner admin-content">
     <h1 className="collection__heading">The Code gallery</h1>
     <Link className="admin-nav-link" href="/admin">← Admin home</Link>
+    <AdminNotice success={notice.success} error={notice.error} />
     <p className="about__text">Upload the images used in the rotating greyscale background. Keep each upload batch below 4 MB.</p>
     <form action={uploadCodeImages} className="admin-upload-card">
       <label>Choose images<input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple required /></label>

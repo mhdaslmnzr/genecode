@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { AdminNotice } from "@/components/AdminNotice";
 import { fetchCatalog } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -12,10 +14,10 @@ async function uploadFeedbackImages(formData: FormData) {
   const files = formData
     .getAll("images")
     .filter((value): value is File => value instanceof File && value.size > 0);
-  if (!files.length || files.some((file) => !file.type.startsWith("image/") || file.size > MAX_IMAGE_BYTES)) return;
+  if (!files.length || files.some((file) => !file.type.startsWith("image/") || file.size > MAX_IMAGE_BYTES)) redirect("/admin/content?error=Choose+valid+images+within+the+upload+limit");
 
   const admin = createAdminClient();
-  if (!admin) return;
+  if (!admin) redirect("/admin/content?error=Supabase+is+not+configured");
 
   const uploadedUrls: string[] = [];
   for (const [index, file] of files.entries()) {
@@ -44,16 +46,17 @@ async function uploadFeedbackImages(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/content");
+  redirect(uploadedUrls.length ? "/admin/content?success=Testimonials+uploaded" : "/admin/content?error=Upload+failed");
 }
 
 async function removeFeedbackImage(formData: FormData) {
   "use server";
 
   const imageUrl = formData.get("imageUrl");
-  if (typeof imageUrl !== "string" || !imageUrl) return;
+  if (typeof imageUrl !== "string" || !imageUrl) redirect("/admin/content?error=Invalid+testimonial");
 
   const admin = createAdminClient();
-  if (!admin) return;
+  if (!admin) redirect("/admin/content?error=Supabase+is+not+configured");
 
   const { data: row } = await admin
     .from("site_settings")
@@ -81,10 +84,12 @@ async function removeFeedbackImage(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/content");
+  redirect("/admin/content?success=Testimonial+removed");
 }
 
-export default async function AdminContentPage() {
+export default async function AdminContentPage({ searchParams }: { searchParams: Promise<{ success?: string; error?: string }> }) {
   const { settings } = await fetchCatalog();
+  const notice = await searchParams;
 
   return (
     <main>
@@ -92,6 +97,7 @@ export default async function AdminContentPage() {
         <div className="collection__inner admin-content">
           <h1 className="collection__heading">Testimonials</h1>
           <Link className="admin-nav-link" href="/admin">← Admin home</Link>
+          <AdminNotice success={notice.success} error={notice.error} />
           <section className="admin-content-section">
           <h2>Customer feedback</h2>
           <p className="about__text">

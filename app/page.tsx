@@ -38,8 +38,12 @@ export default async function HomePage() {
         <section className="collection" id="collection" aria-labelledby="collection-heading">
           <SectionCursorGrid />
           <div className="collection__inner">
-            <h2 className="collection__heading" id="collection-heading">{activeDrop?.label || "Drop"}</h2>
-            <ShirtGrid items={primary} />
+            {activeDrop && primary.length ? <>
+              <h2 className="collection__heading" id="collection-heading">{activeDrop.label}</h2>
+              <ShirtGrid items={primary} />
+            </> : <div className="collection-empty" id="collection-heading">
+              <h2>Drops on the way — stay tuned</h2>
+            </div>}
           </div>
         </section>
 

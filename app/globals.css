@@ -196,7 +196,7 @@ a {
   align-items: center;
   gap: var(--space-lg);
   white-space: nowrap;
-  animation: ticker-scroll 10s linear infinite;
+  animation: ticker-scroll 40s linear infinite;
   padding-inline: var(--page-pad-x);
   font-weight: 500;
   font-size: clamp(0.625rem, 1.2vw + 0.5rem, 0.75rem);

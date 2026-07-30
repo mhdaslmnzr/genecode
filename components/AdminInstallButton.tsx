@@ -22,7 +22,7 @@ export function AdminInstallButton() {
     const onInstalled = () => {
       setInstalled(true);
       setEvent(null);
-      setMessage("Genecode is installed.");
+      setMessage("Genecode Admin is installed.");
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
@@ -47,11 +47,11 @@ export function AdminInstallButton() {
     }
   }
 
-  if (installed) return <p className="admin-notice admin-notice--success">Genecode is already installed.</p>;
+  if (installed) return <p className="admin-notice admin-notice--success">Genecode Admin is already installed.</p>;
 
   return (
     <div className="admin-install">
-      <button className="admin-btn" type="button" onClick={install}>Install Genecode app</button>
+      <button className="admin-btn" type="button" onClick={install}>Install Genecode Admin</button>
       {message && <p className="admin-hint admin-hint--wide" role="status">{message}</p>}
     </div>
   );

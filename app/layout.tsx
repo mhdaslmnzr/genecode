@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { AppSplash } from "@/components/AppSplash";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import "./globals.css";
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AppSplash />
         {children}
         <InstallPrompt />
+        <Analytics />
       </body>
     </html>
   );

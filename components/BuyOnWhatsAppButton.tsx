@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@vercel/analytics";
 import type { FlatShirt } from "@/lib/types";
 import { formatPrice } from "@/lib/price";
 
@@ -37,7 +38,21 @@ export function BuyOnWhatsAppButton({
       .filter(Boolean)
       .join("\n");
 
+    track("whatsapp_clicked", {
+      shirt_code: item.shirt.code,
+      size,
+      drop_number: String(item.drop.number),
+    });
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  }
+
+  function selectSize(selectedSize: string) {
+    setSize(selectedSize);
+    track("size_selected", {
+      shirt_code: item.shirt.code,
+      size: selectedSize,
+      drop_number: String(item.drop.number),
+    });
   }
 
   return (
@@ -45,7 +60,7 @@ export function BuyOnWhatsAppButton({
       {item.shirt.sizes.length > 0 && (
         <div className="product-add__sizes">
           <label htmlFor="size-select">Size</label>
-          <select id="size-select" value={size} onChange={(e) => setSize(e.target.value)}>
+          <select id="size-select" value={size} onChange={(e) => selectSize(e.target.value)}>
             {item.shirt.sizes.map((availableSize) => (
               <option key={availableSize} value={availableSize}>{availableSize}</option>
             ))}

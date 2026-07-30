@@ -2,7 +2,7 @@ import type { Drop, SiteSettings } from "./types";
 
 export const FALLBACK_SETTINGS: SiteSettings = {
   activeDropId: "2026-01",
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "91XXXXXXXXXX",
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918136942735",
   instagramHandle: "@genecode.clothing",
   aboutText:
     "Genecode is a men's shirt label built on sharp silhouettes and quiet confidence. Drop 01 is six pieces—released on a rhythm, not a noise.",
@@ -13,6 +13,7 @@ export const FALLBACK_SETTINGS: SiteSettings = {
       "Drop 01 live now — limited pieces only",
     ],
   },
+  testimonialImages: [],
 };
 
 function img(path: string) {

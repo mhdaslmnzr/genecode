@@ -100,6 +100,12 @@ export async function fetchCatalog(): Promise<{ drops: Drop[]; settings: SiteSet
         if (row.key === "ticker" && row.value && typeof row.value === "object") {
           settings = { ...settings, ticker: row.value as SiteSettings["ticker"] };
         }
+        if (row.key === "testimonial_images" && Array.isArray(row.value)) {
+          settings = {
+            ...settings,
+            testimonialImages: row.value.filter((value): value is string => typeof value === "string"),
+          };
+        }
       }
     }
 

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BuyOnWhatsAppButton } from "@/components/BuyOnWhatsAppButton";
 import { fetchCatalog, findShirt, formatDropTitle } from "@/lib/catalog";
@@ -21,7 +20,6 @@ export default async function ProductPage({
 
   return (
     <>
-      <Header />
       <main>
         <section className="collection product-page">
           <div className="collection__inner">
@@ -50,7 +48,7 @@ export default async function ProductPage({
           </div>
         </section>
       </main>
-      <Footer settings={settings} drops={drops} />
+      <Footer settings={settings} />
     </>
   );
 }

@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { Header } from "@/components/Header";
 import { AdminLoginForm } from "@/components/AdminLoginForm";
 
 export default function AdminLoginPage() {
   return (
     <>
-      <Header />
       <main>
         <section className="collection">
           <div className="collection__inner admin-login">

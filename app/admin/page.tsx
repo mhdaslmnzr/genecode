@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { Header } from "@/components/Header";
 import { parseAdminSessionToken, ADMIN_COOKIE } from "@/lib/admin-session";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
 
@@ -10,7 +9,6 @@ export default async function AdminDashboard() {
 
   return (
     <>
-      <Header />
       <main>
         <section className="collection">
           <div className="collection__inner">
@@ -18,6 +16,7 @@ export default async function AdminDashboard() {
             <p className="about__text">Signed in as {email}</p>
             <ul className="admin-nav-list">
               <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/drops">Manage drops</Link></li>
+              <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/content">Manage homepage images</Link></li>
             </ul>
             <AdminLogoutButton />
           </div>

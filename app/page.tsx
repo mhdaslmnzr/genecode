@@ -1,11 +1,9 @@
-import { Header } from "@/components/Header";
 import { Ticker } from "@/components/Ticker";
 import { ShirtGrid } from "@/components/ShirtGrid";
 import { VaultSection } from "@/components/VaultSection";
 import { Footer } from "@/components/Footer";
 import {
   fetchCatalog,
-  formatDropTitle,
   getActiveDrop,
   getCarryOverShirts,
   getPrimaryShirts,
@@ -18,20 +16,17 @@ export default async function HomePage() {
   const activeDrop = getActiveDrop(drops, settings.activeDropId);
   const primary = getPrimaryShirts(drops, settings.activeDropId);
   const carryOver = getCarryOverShirts(drops, settings.activeDropId);
-  const dropTitle = activeDrop ? formatDropTitle(activeDrop) : "DROP 01";
 
   return (
     <>
       <a className="skip-link" href="#collection">Skip to collection</a>
-      <Header solid={false} />
-      <Ticker settings={settings} />
 
       <main>
         <section className="hero" id="hero" aria-label="Introduction">
+          <Ticker settings={settings} />
           <div className="hero__inner">
-            <h1 className="hero__title">GENECODE</h1>
+            <img className="hero__logo" src="/assets/logo.png" alt="Genecode" />
             <hr className="hero__rule" />
-            <p className="hero__tagline">{dropTitle} — {activeDrop?.tagline || ""}</p>
           </div>
           <div className="hero__scroll" aria-hidden="true">
             <span className="hero__scroll-arrow" />
@@ -63,20 +58,7 @@ export default async function HomePage() {
 
         <section className="team" id="team" aria-labelledby="team-heading">
           <div className="team__inner">
-            <h2 className="team__heading" id="team-heading">THE TRIO BEHIND THE CODE</h2>
-            <div className="team__grid" role="list">
-              {[
-                { name: "Sufaid", role: "The Visionary" },
-                { name: "Thalhath", role: "The Builder" },
-                { name: "Hiba", role: "The Eye" },
-              ].map((m) => (
-                <article className="team-card" role="listitem" key={m.name}>
-                  <div className="team-card__photo" role="img" aria-label={`${m.name} — photo placeholder`} />
-                  <h3 className="team-card__name">{m.name}</h3>
-                  <p className="team-card__role">{m.role}</p>
-                </article>
-              ))}
-            </div>
+            <h2 className="team__heading" id="team-heading">BEHIND THE CODE</h2>
             <p className="team__body">
               Three siblings from Kerala on a mission — to bring sharp, limited men&apos;s fashion to a generation tired of the
               same. Every piece in every drop is handpicked. No filler. No repeats. Just pieces worth wearing.
@@ -87,14 +69,12 @@ export default async function HomePage() {
         <section className="insta-feed" id="insta-feed" aria-labelledby="insta-heading">
           <div className="insta-feed__inner">
             <h2 className="insta-feed__heading" id="insta-heading">FOLLOW THE DROP</h2>
-            <p className="about__text">
-              <a href={`https://www.instagram.com/${settings.instagramHandle.replace("@", "")}/`} target="_blank" rel="noopener noreferrer">
-                {settings.instagramHandle}
-              </a>
-            </p>
-            <a className="insta-feed__cta" href={`https://www.instagram.com/${settings.instagramHandle.replace("@", "")}/`} target="_blank" rel="noopener noreferrer">
-              SEE ALL ON INSTAGRAM →
-            </a>
+            <iframe
+              className="insta-feed__embed"
+              src="https://www.instagram.com/genecode.clothing/embed"
+              title="Genecode Clothing on Instagram"
+              loading="lazy"
+            />
           </div>
         </section>
 
@@ -103,24 +83,24 @@ export default async function HomePage() {
         <section className="testimonials" id="testimonials" aria-labelledby="testimonials-heading">
           <div className="testimonials__inner">
             <h2 className="testimonials__heading" id="testimonials-heading">WHAT THEY SAY</h2>
-            <div className="testimonials__grid" role="list">
-              {[
-                { q: "Cleanest shirt I've owned. Got stopped twice on the first day.", who: "Arjun M., Kochi" },
-                { q: "Bought GC-01, wore it to a wedding. Nobody had seen anything like it.", who: "Rahul T., Thrissur" },
-                { q: "Finally, something different. Kerala needed this.", who: "Vishnu K., Calicut" },
-              ].map((t) => (
-                <figure className="testimonial-card" role="listitem" key={t.who}>
-                  <span className="testimonial-card__mark" aria-hidden="true">&quot;</span>
-                  <blockquote className="testimonial-card__quote"><p>{t.q}</p></blockquote>
-                  <figcaption className="testimonial-card__cite">{t.who}</figcaption>
-                </figure>
-              ))}
-            </div>
+            {settings.testimonialImages.length ? (
+              <div className="testimonials__scroller" role="list">
+                <div className="testimonials__track">
+                  {[...settings.testimonialImages, ...settings.testimonialImages].map((src, index) => (
+                    <figure className="testimonial-card" role="listitem" key={`${src}-${index}`}>
+                      <img src={src} alt={`Customer feedback screenshot ${(index % settings.testimonialImages.length) + 1}`} loading="lazy" />
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="content-image-placeholder">Customer feedback screenshots coming soon</div>
+            )}
           </div>
         </section>
       </main>
 
-      <Footer settings={settings} drops={drops} />
+      <Footer settings={settings} />
     </>
   );
 }

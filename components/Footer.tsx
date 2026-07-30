@@ -1,11 +1,7 @@
 import Link from "next/link";
 import type { SiteSettings } from "@/lib/types";
-import { formatDropTitle, getActiveDrop } from "@/lib/catalog";
-import type { Drop } from "@/lib/types";
 
-export function Footer({ settings, drops }: { settings: SiteSettings; drops: Drop[] }) {
-  const active = getActiveDrop(drops, settings.activeDropId);
-  const dropTitle = active ? formatDropTitle(active) : "DROP 01";
+export function Footer({ settings }: { settings: SiteSettings }) {
   const handle = settings.instagramHandle.replace(/^@/, "");
   const waNum = settings.whatsappNumber.replace(/\D/g, "");
 
@@ -13,7 +9,7 @@ export function Footer({ settings, drops }: { settings: SiteSettings; drops: Dro
     <footer className="site-footer" id="site-footer">
       <div className="site-footer__inner">
         <div className="site-footer__brand">
-          <img className="site-footer__logo" src="/assets/logo-dark.png" width={160} height={40} alt="" />
+          <p className="site-footer__brand-name">GENECODE</p>
           <p className="site-footer__tagline">Sharp silhouettes. Quiet confidence.</p>
         </div>
         <nav className="site-footer__nav" aria-label="Explore">
@@ -29,12 +25,15 @@ export function Footer({ settings, drops }: { settings: SiteSettings; drops: Dro
           </ul>
         </nav>
         <div className="site-footer__order">
-          <h3 className="site-footer__nav-heading">Order</h3>
+          <h3 className="site-footer__nav-heading">Contact</h3>
+          <a className="site-footer__link" href="mailto:genecodeclothing@gmail.com">genecodeclothing@gmail.com</a>
           <a className="site-footer__link site-footer__link--cta" href={waNum ? `https://wa.me/${waNum}` : "#"} target="_blank" rel="noopener noreferrer">
-            WhatsApp
+            {waNum ? `+${waNum}` : "WhatsApp"}
           </a>
+          <address className="site-footer__address">
+            Genecode, Kuttamassery, Thottumugham, Aluva<br />683105
+          </address>
         </div>
-        <p className="site-footer__meta">Now featuring {dropTitle}</p>
         <p className="site-footer__legal">© GENECODE · {new Date().getFullYear()}</p>
       </div>
     </footer>

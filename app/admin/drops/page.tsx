@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Header } from "@/components/Header";
 import { fetchCatalog, formatDropTitle } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
@@ -20,7 +19,6 @@ export default async function AdminDropsPage() {
 
   return (
     <>
-      <Header />
       <main>
         <section className="collection">
           <div className="collection__inner">

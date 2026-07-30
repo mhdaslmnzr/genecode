@@ -37,4 +37,5 @@ export interface SiteSettings {
   instagramHandle: string;
   aboutText: string;
   ticker: { enabled: boolean; messages: string[] };
+  testimonialImages: string[];
 }

@@ -29,13 +29,16 @@ Run these files in order:
 
 1. `supabase/migrations/001_initial_schema.sql`
 2. `supabase/migrations/002_site_settings.sql`
-3. `supabase/seed.sql`
+3. `supabase/migrations/003_homepage_images.sql`
+4. `supabase/seed.sql`
 
 Public users receive read-only catalog access through Row Level Security. The service-role key must remain server-side.
 
 ## Admin
 
 Visit `/admin/login` and sign in with an email listed in `ADMIN_EMAILS` plus `ADMIN_PASSWORD`. The `/admin/drops` screen controls whether each shirt is available or sold out.
+
+The `/admin/content` screen accepts any number of customer-feedback screenshots for the homepage carousel.
 
 ## Routes
 

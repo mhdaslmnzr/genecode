@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ShirtGrid } from "@/components/ShirtGrid";
 import { fetchCatalog, formatDropTitle, getArchiveDrops } from "@/lib/catalog";
@@ -13,7 +12,6 @@ export default async function ArchivePage() {
 
   return (
     <>
-      <Header />
       <main>
         <section className="archive-hero" id="archive" aria-labelledby="archive-heading">
           <div className="archive-hero__inner">
@@ -42,7 +40,7 @@ export default async function ArchivePage() {
           )}
         </div>
       </main>
-      <Footer settings={settings} drops={drops} />
+      <Footer settings={settings} />
     </>
   );
 }

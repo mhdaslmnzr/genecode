@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   manifest: "/admin-manifest.json",
   icons: {
     icon: [{ url: "/assets/icons/admin-icon-192.png", type: "image/png", sizes: "192x192" }],
-    apple: [{ url: "/assets/icons/apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
+    apple: [{ url: "/assets/icons/admin-apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
   },
   appleWebApp: {
     capable: true,

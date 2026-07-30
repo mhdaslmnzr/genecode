@@ -8,7 +8,7 @@ export default function AdminLoginPage() {
       <Header />
       <main>
         <section className="collection">
-          <div className="collection__inner checkout-form">
+          <div className="collection__inner admin-login">
             <AdminLoginForm />
             <Link className="admin-nav-link" href="/">← Back to shop</Link>
           </div>

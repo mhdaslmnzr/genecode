@@ -1,68 +1,55 @@
-# Genecode — Next.js Store
+# Genecode
 
-Premium men's shirt drops. Next.js 15 + Supabase + Razorpay (WhatsApp fallback).
+Limited-run men's shirt storefront built with Next.js 15 and Supabase. Customers select a shirt and size, then continue directly to WhatsApp with a pre-filled enquiry containing the product details and image link.
 
-## Quick start
+## Local development
 
 ```bash
 npm install
 cp .env.example .env.local
-# Fill in Supabase + optional Razorpay keys
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). If Supabase is not configured, the storefront uses the catalog in `lib/site-config.ts`.
 
-Without Supabase env vars, the site uses **fallback catalog data** baked into `lib/site-config.ts`.
+## Configuration
 
-## Supabase setup
+Set the variables from `.env.example`:
 
-1. Create a project at [supabase.com](https://supabase.com)
-2. Run SQL in order:
-   - `supabase/migrations/001_initial_schema.sql`
-   - `supabase/migrations/002_orders_and_cart.sql`
-   - `supabase/seed.sql`
-3. Copy **Project URL** and **anon key** → `.env.local`
-4. Copy **service role key** → `SUPABASE_SERVICE_ROLE_KEY` (server-only, for orders + admin)
+- `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` load the public catalog.
+- `SUPABASE_SERVICE_ROLE_KEY` lets the authenticated admin update shirt availability.
+- `NEXT_PUBLIC_WHATSAPP_NUMBER` is the destination number, including country code and digits only.
+- `ADMIN_EMAILS`, `ADMIN_PASSWORD`, and `ADMIN_SESSION_SECRET` protect the admin area.
+- `CRON_SECRET` protects the daily Vercel activity check; use a random value of at least 16 characters.
+- `NEXT_PUBLIC_SITE_URL` is the deployed storefront URL.
 
-## Razorpay (optional)
+## Supabase
 
-Add to `.env.local`:
+Run these files in order:
 
-```
-RAZORPAY_KEY_ID=
-RAZORPAY_KEY_SECRET=
-NEXT_PUBLIC_RAZORPAY_KEY_ID=
-```
+1. `supabase/migrations/001_initial_schema.sql`
+2. `supabase/migrations/002_site_settings.sql`
+3. `supabase/seed.sql`
 
-If missing, checkout creates an order and opens **WhatsApp** with order details.
+Public users receive read-only catalog access through Row Level Security. The service-role key must remain server-side.
 
 ## Admin
 
-1. Set `ADMIN_EMAILS=you@example.com` in `.env.local`
-2. Enable Email auth in Supabase → Authentication
-3. Visit `/admin/login` → magic link
-4. Manage sold-out toggles at `/admin/drops`, orders at `/admin/orders`
-
-## Deploy (Vercel)
-
-1. Push to GitHub
-2. Import in Vercel
-3. Add all env vars from `.env.example`
-4. Set `NEXT_PUBLIC_SITE_URL` to your production URL
-
-## Legacy static site
-
-The original GitHub Pages build lives in `legacy/` for reference.
+Visit `/admin/login` and sign in with an email listed in `ADMIN_EMAILS` plus `ADMIN_PASSWORD`. The `/admin/drops` screen controls whether each shirt is available or sold out.
 
 ## Routes
 
 | Route | Purpose |
-|-------|---------|
-| `/` | Home + active drop |
-| `/archive` | Sold-out drops (The Vault) |
-| `/shirt/[year]/[dropNum]/[code]` | Product page |
-| `/cart` | Shopping cart |
-| `/checkout` | Place order |
-| `/order/[id]` | Confirmation |
-| `/admin` | Dashboard |
+|---|---|
+| `/` | Active drop and available shirts |
+| `/archive` | Sold-out drops |
+| `/shirt/[year]/[dropNum]/[code]` | Product, size selection, and WhatsApp purchase link |
+| `/admin` | Catalog administration |
+
+The original static site is retained in `legacy/` for reference.
+
+## Keeping Supabase active on Vercel
+
+`vercel.json` schedules `/api/cron/keep-supabase-active` once per day. The route performs a small read from the `drops` table and returns an error if Supabase cannot be reached.
+
+Add the same strong `CRON_SECRET` value to the Vercel project's Production environment, then redeploy. Vercel automatically sends it as a Bearer token when invoking the cron route. Cron status and logs appear under **Project → Settings → Cron Jobs**.

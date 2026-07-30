@@ -29,9 +29,9 @@ export default async function AdminDropsPage() {
             {drops.map((drop) => (
               <div className="archive-drop" key={drop.id}>
                 <h2 className="archive-drop__title">{formatDropTitle(drop)}</h2>
-                <ul className="cart-list">
+                <ul className="admin-product-list">
                   {drop.shirts.map((shirt) => (
-                    <li className="cart-list__item admin-row" key={shirt.code}>
+                    <li className="admin-row" key={shirt.code}>
                       <div className="admin-row__info">
                         <strong className="admin-row__code">{shirt.code}</strong>
                         <span className="admin-row__name">{shirt.name || "Untitled"}</span>

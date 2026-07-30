@@ -38,28 +38,3 @@ export interface SiteSettings {
   aboutText: string;
   ticker: { enabled: boolean; messages: string[] };
 }
-
-export interface CartItem {
-  key: string;
-  year: number;
-  dropNum: string;
-  code: string;
-  name: string;
-  price: string;
-  image: string;
-  size: string;
-  quantity: number;
-  dropId: string;
-  shirtId?: string;
-}
-
-export interface OrderRecord {
-  id: string;
-  customer_name: string;
-  phone: string;
-  email: string | null;
-  address: string;
-  status: string;
-  total: number;
-  created_at: string;
-}

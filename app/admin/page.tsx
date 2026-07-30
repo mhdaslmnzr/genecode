@@ -18,7 +18,6 @@ export default async function AdminDashboard() {
             <p className="about__text">Signed in as {email}</p>
             <ul className="admin-nav-list">
               <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/drops">Manage drops</Link></li>
-              <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/orders">Orders</Link></li>
             </ul>
             <AdminLogoutButton />
           </div>

@@ -36,7 +36,7 @@ export function AdminLoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="checkout-form__fields">
+    <form onSubmit={handleSubmit} className="admin-login-form">
       <h1 className="collection__heading">Admin login</h1>
       <p className="about__text">Sign in with your admin email and password.</p>
       <label>
@@ -59,7 +59,7 @@ export function AdminLoginForm() {
           autoComplete="current-password"
         />
       </label>
-      {error && <p className="checkout-form__error">{error}</p>}
+      {error && <p className="admin-login-form__error">{error}</p>}
       <button type="submit" className="admin-btn" disabled={loading}>
         {loading ? "Signing in…" : "Sign in"}
       </button>

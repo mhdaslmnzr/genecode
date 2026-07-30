@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { parseAdminSessionToken, ADMIN_COOKIE } from "@/lib/admin-session";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
+import { AdminInstallButton } from "@/components/AdminInstallButton";
 
 export default async function AdminDashboard() {
   const cookieStore = await cookies();
@@ -21,6 +22,7 @@ export default async function AdminDashboard() {
               <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/code-gallery">The Code gallery</Link></li>
               <li><Link className="admin-nav-link admin-nav-link--card" href="/admin/content">Testimonials</Link></li>
             </ul>
+            <AdminInstallButton />
             <AdminLogoutButton />
           </div>
         </section>

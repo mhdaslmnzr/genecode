@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AppSplash } from "@/components/AppSplash";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,6 +14,11 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/assets/icons/apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
   },
+  appleWebApp: {
+    capable: true,
+    title: "GENECODE",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -21,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AppSplash />
         {children}
+        <InstallPrompt />
       </body>
     </html>
   );

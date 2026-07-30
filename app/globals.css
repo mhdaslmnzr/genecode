@@ -314,6 +314,79 @@ a {
   animation: app-splash-progress 1s ease-in-out infinite;
 }
 
+.install-prompt {
+  position: fixed;
+  right: max(var(--space-md), env(safe-area-inset-right, 0px));
+  bottom: max(var(--space-md), env(safe-area-inset-bottom, 0px));
+  z-index: 900;
+  width: min(calc(100% - 2rem), 27rem);
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: 1px solid rgba(245, 240, 208, 0.28);
+  background: var(--color-crimson);
+  color: var(--color-cream);
+  box-shadow: 0 1rem 3rem rgba(26, 26, 26, 0.28);
+}
+
+.install-prompt img {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+}
+
+.install-prompt__copy {
+  min-width: 0;
+}
+
+.install-prompt__copy strong,
+.install-prompt__copy p {
+  display: block;
+  margin: 0;
+}
+
+.install-prompt__copy p {
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: rgba(245, 240, 208, 0.82);
+}
+
+.install-prompt button {
+  min-height: 2.5rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--color-cream);
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.install-prompt__install {
+  background: var(--color-cream);
+  color: var(--color-crimson);
+}
+
+.install-prompt__dismiss {
+  grid-column: 2 / -1;
+  justify-self: end;
+  min-height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent;
+  color: rgba(245, 240, 208, 0.75);
+}
+
+@media (max-width: 480px) {
+  .install-prompt {
+    left: var(--space-md);
+    right: var(--space-md);
+    width: auto;
+  }
+}
+
 @keyframes app-splash-progress {
   0% { transform: translateX(-110%); }
   100% { transform: translateX(245%); }
@@ -1865,6 +1938,11 @@ body.shirt-detail-open {
 }
 
 .admin-logout {
+  margin-top: var(--space-xl);
+}
+
+.admin-install {
+  max-width: 32rem;
   margin-top: var(--space-xl);
 }
 
